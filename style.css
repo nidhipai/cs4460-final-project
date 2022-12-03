@@ -1,0 +1,34 @@
+body {
+  font: 12px sans-serif;
+}
+
+.tick > line {
+	fill: none;
+	stroke: black;
+}
+.tick > text {
+	fill: black;
+}
+
+path.domain {
+	fill: none;
+	stroke-width: 2px;
+	stroke: black;
+}
+
+#wrapper {
+	clear:both;
+}
+#chart {
+  float:left;
+}
+
+.data-circle {
+    opacity: .6;
+    stroke: black;
+}
+
+/* Useful if you select a point and want to grayout the rest of the circles */
+.non-brushed { 
+    filter: grayscale(100%);
+}
