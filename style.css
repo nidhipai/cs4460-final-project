@@ -32,3 +32,16 @@ path.domain {
 .non-brushed { 
     filter: grayscale(100%);
 }
+
+.moused {
+    fill: pink;
+}
+
+.selected {
+    stroke-width: .5ch;
+    fill: red;
+}
+
+.unselected {
+    fill: blue;
+}

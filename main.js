@@ -88,7 +88,29 @@ function initChart() {
         .enter()
         .append("circle")
         .attr('r', 5)
-        .classed("data-circle", true);
+        .classed("data-circle", true)
+        .on("mouseover", function(d) {
+            d3.select(this).classed("moused", true);
+        })
+        .on("mouseout", function(d) {
+            d3.select(this).classed("moused", false);
+        });
+
+    d3.select('svg').on("click", function() {
+        // if target is circle, copy above
+        if (d3.event.target.classList.contains("data-circle")) {
+            console.log(d3.event.target);
+            //unselect everything else
+            d3.selectAll('circle').classed("selected", false);
+            //select this one
+            d3.select(d3.event.target).classed("selected", true);
+            //display tooltip
+            //TO DO
+        } else {
+            // if somewhere else is clicked (other than a data point), clear all circles
+            d3.selectAll('circle').classed("selected", false);
+        }
+    });
 
     updateChart("Sleep1", "HeartRate1");
 }
