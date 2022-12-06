@@ -12,10 +12,22 @@
         <h2>Nidhi Pai and Tyler Schott</h2>
    		<br />
    		<br />
-	   	<div id="wrapper">
-			<div id="chart">
-	    	</div>
-	   	</div>
+        <svg id="chart" width="500" height="500" style="border: 1px solid #777;">
+        </svg>
+        <div>
+            <label for="sleepSelect">Sleep metric: </label>
+            <select class="custom-select" id="sleepSelect" onchange="onMetricChanged()">
+              <option selected value="Sleep1">Sleep 1</option>
+              <option value="Sleep2">Sleep 2</option>
+            </select> 
+            <br>
+            <label for="heartRateSelect">Heart rate metric: </label>
+            <select class="custom-select" id="heartRateSelect" onchange="onMetricChanged()">
+              <option selected value="HeartRate1">HeartRate 1</option>
+              <option value="HeartRate2">HeartRate 2</option>
+            </select>
+        </div> 
+
 	</body>
 </html>
 
