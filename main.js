@@ -8,25 +8,15 @@ var tooltip;
 var sleepMetric = "Sleep1";
 var heartRateMetric = "HeartRate1";
 
-// create chart + labels
-console.log('check 1');
-// var chart = d3 // this seems like a hack
-//     .select("#chart")
-//     .append("svg")
-//     .attr("id", "svg-main")
-//     .attr("width", width)
-//     .attr("height", height);
-var chart = d3.select('svg');
-var chartG = chart.append('g');
-console.log(chart);
-var title = chartG
+//create title for chart
+var title = d3.select('svg')
     .append("text")
     .attr("x", width/2)
     .attr("y", 12)
     .attr("font-size", "12px")
     .text("Heart Rate vs. Sleep Metrics");
 
-
+//load data
 d3.csv("mock_data.csv", function (csv) {
     for (var i = 0; i < csv.length; ++i) {
         csv[i].HeartRate1 = Number(csv[i].HeartRate1);
@@ -35,7 +25,6 @@ d3.csv("mock_data.csv", function (csv) {
         csv[i].Sleep2 = Number(csv[i].Sleep2);
     }
     data = csv;
-    console.log(csv);
     initChart();
 });
 
@@ -59,6 +48,7 @@ function initChart() {
         "HeartRate2": "Heart Rate 2"
     }
 
+    // create axes labels
     var sleepLabel = d3.select('svg')
         .append("text")
         .attr("x", width/2)
@@ -74,11 +64,11 @@ function initChart() {
         .attr("transform", "rotate(-90)")
         .attr("id", "y-axis-label");
     
+    // creates groups for the axes
     d3.select('svg')
         .append("g") // create a group node
         .attr("id", "x-axis-g")
-        .attr("transform", "translate(0," + (width - 30) + ")"); // note I deleted a ton of stuff here, see lab4
-        // not sure if that did anything
+        .attr("transform", "translate(0," + (width - 30) + ")");
     
     d3.select('svg') // or something else that selects the SVG element in your visualizations
         .append("g") // create a group node
@@ -92,28 +82,28 @@ function initChart() {
         .append("circle")
         .attr('r', 5)
         .classed("data-circle", true)
-        .on("mouseover", function(d) {
+        .on("mouseover", function(d) { //change color on mouseover
             d3.select(this).classed("moused", true);
         })
         .on("mouseout", function(d) {
             d3.select(this).classed("moused", false);
         });
 
+    // create the tooltip
     tooltip = d3.select('svg')
         .append("text")
-        .text('this is a tooltip')
         .attr("id", "tooltip")
-        .style("visibility", "hidden");
+        .style("visibility", "hidden"); //starts off hidden
 
+    // clicking a circle
     d3.select('svg').on("click", function() {
         // if target is circle, copy above
         if (d3.event.target.classList.contains("data-circle")) {
-            console.log(d3.event.target);
             //unselect everything else
             d3.selectAll('circle').classed("selected", false);
             //select this one
             d3.select(d3.event.target).classed("selected", true);
-            //display tooltip here
+            //update tooltip
             tooltip.style("visibility", "visible")
                 .attr('x', d3.select(d3.event.target).attr("cx"))
                 .attr('y', d3.select(d3.event.target).attr("cy"))
@@ -128,9 +118,11 @@ function initChart() {
         }
     });
 
+    // update chart with default metrics
     updateChart();
 }
 
+// function that updates the chart based on user selection of metrics
 function updateChart() {
     // update axes
     var xAxis = d3.axisBottom().scale(scales[sleepMetric]);
@@ -163,14 +155,16 @@ function updateChart() {
     }
 }
 
+// format text for tooltip
 function formatTooltipText(sleep, heartRate) {
     return sleep + " " + heartRate;
 }
 
+// event handler for changing the metrics with the drop down
 function onMetricChanged() {
-    console.log('Metric changed');
+    // save the user selection
     var select = d3.select('#sleepSelect').node();
-    sleepMetric = select.options[select.selectedIndex].value; //might want to make this a global variable
+    sleepMetric = select.options[select.selectedIndex].value;
     var select = d3.select('#heartRateSelect').node();
     heartRateMetric = select.options[select.selectedIndex].value;
     updateChart();
