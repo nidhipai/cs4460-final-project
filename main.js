@@ -4,6 +4,9 @@ var data;
 var extents;
 var scales;
 var titles;
+var tooltip;
+var sleepMetric = "Sleep1";
+var heartRateMetric = "HeartRate1";
 
 // create chart + labels
 console.log('check 1');
@@ -96,6 +99,12 @@ function initChart() {
             d3.select(this).classed("moused", false);
         });
 
+    tooltip = d3.select('svg')
+        .append("text")
+        .text('this is a tooltip')
+        .attr("id", "tooltip")
+        .style("visibility", "hidden");
+
     d3.select('svg').on("click", function() {
         // if target is circle, copy above
         if (d3.event.target.classList.contains("data-circle")) {
@@ -104,18 +113,25 @@ function initChart() {
             d3.selectAll('circle').classed("selected", false);
             //select this one
             d3.select(d3.event.target).classed("selected", true);
-            //display tooltip
-            //TO DO
+            //display tooltip here
+            tooltip.style("visibility", "visible")
+                .attr('x', d3.select(d3.event.target).attr("cx"))
+                .attr('y', d3.select(d3.event.target).attr("cy"))
+                .text(
+                    formatTooltipText(d3.select(d3.event.target).data()[0][sleepMetric],
+                    d3.select(d3.event.target).data()[0][heartRateMetric])
+                );
         } else {
             // if somewhere else is clicked (other than a data point), clear all circles
             d3.selectAll('circle').classed("selected", false);
+            tooltip.style("visibility", "hidden");
         }
     });
 
-    updateChart("Sleep1", "HeartRate1");
+    updateChart();
 }
 
-function updateChart(sleepMetric, heartRateMetric) {
+function updateChart() {
     // update axes
     var xAxis = d3.axisBottom().scale(scales[sleepMetric]);
     var yAxis = d3.axisLeft().scale(scales[heartRateMetric]);
@@ -128,19 +144,34 @@ function updateChart(sleepMetric, heartRateMetric) {
 
     // update data points
     d3.selectAll(".data-circle")
-        .attr('transform', function(d) {
-            console.log(d);
-            var xpos = scales[sleepMetric](d[sleepMetric]);
-            var ypos = scales[heartRateMetric](d[heartRateMetric]);
-            return "translate(".concat(xpos, ", ", ypos, ")");
+        .attr('cx', function(d) {
+            return scales[sleepMetric](d[sleepMetric]);
+        })
+        .attr('cy', function(d) {
+            return  scales[heartRateMetric](d[heartRateMetric]);
         });
+
+    // if something is  selected, then update position of tooltip
+    if (!d3.select(".selected").empty()) {
+        var selected_circle = d3.select(".selected");
+        tooltip.attr('x', selected_circle.attr("cx"))
+            .attr('y', selected_circle.attr("cy"))
+            .text(
+                formatTooltipText(selected_circle.data()[0][sleepMetric],
+                    selected_circle.data()[0][heartRateMetric])
+            );
+    }
+}
+
+function formatTooltipText(sleep, heartRate) {
+    return sleep + " " + heartRate;
 }
 
 function onMetricChanged() {
     console.log('Metric changed');
     var select = d3.select('#sleepSelect').node();
-    var sleepMetric = select.options[select.selectedIndex].value; //might want to make this a global variable
+    sleepMetric = select.options[select.selectedIndex].value; //might want to make this a global variable
     var select = d3.select('#heartRateSelect').node();
-    var heartRateMetric = select.options[select.selectedIndex].value;
-    updateChart(sleepMetric, heartRateMetric);
+    heartRateMetric = select.options[select.selectedIndex].value;
+    updateChart();
 }
