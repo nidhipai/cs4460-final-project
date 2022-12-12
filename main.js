@@ -69,15 +69,15 @@ function initChart() {
         "Respiratory Rate": d3.scaleLinear().domain([11, 14]).range([470, 30]),
     }
     titles = {
-        "Total Sleep Duration": "Total Sleep Duration",
-        "REM Sleep Duration": "REM Sleep Duration",
-        "Bedtime Start": "Bedtime Start",
-        "Bedtime End": "Bedtime End",
+        "Total Sleep Duration": "Total Sleep Duration (hours)",
+        "REM Sleep Duration": "REM Sleep Duration (hours)",
+        "Bedtime Start": "Bedtime Start (hours from midnight)",
+        "Bedtime End": "Bedtime End (time)",
 
-        "Average Resting Heart Rate": "Average Resting Heart Rate",
-        "Average HRV": "Average HRV",
+        "Average Resting Heart Rate": "Average Resting Heart Rate (bpm)",
+        "Average HRV": "Average HRV (ms)",
         "Temperature Deviation (°C)": "Temperature Deviation (°C)",
-        "Respiratory Rate": "Respiratory Rate",
+        "Respiratory Rate": "Respiratory Rate (brpm)",
     }
 
     var chart = d3.select('svg');
