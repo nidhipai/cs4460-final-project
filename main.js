@@ -5,6 +5,12 @@ var extents;
 var scales;
 var titles;
 var tooltip;
+var tooltip_rect;
+var tooltip_date;
+var tooltip_hr_metric;
+var tooltip_sleep_metric;
+var tooltip_sleep_score;
+var tooltip_steps;
 var sleepMetric = "Total Sleep Duration";
 var heartRateMetric = "Average Resting Heart Rate";
 var startDate = "2022-01-01";
@@ -147,22 +153,22 @@ function initChart() {
         .attr('opacity', '0.85')
     // .style("visibility", "hidden") //starts off hidden
 
-    var tooltip_text = tooltip
+    tooltip_text = tooltip
         .append("text")
     
-    var tooltip_date = tooltip_text
+    tooltip_date = tooltip_text
         .append("tspan")
 
-    var tooltip_sleep_metric = tooltip_text
+    tooltip_sleep_metric = tooltip_text
         .append("tspan")
 
-    var tooltip_hr_metric = tooltip_text
+    tooltip_hr_metric = tooltip_text
         .append("tspan")
 
-    var tooltip_steps = tooltip_text
+    tooltip_steps = tooltip_text
         .append("tspan")
 
-    var tooltip_sleep_score = tooltip_text
+    tooltip_sleep_score = tooltip_text
         .append("tspan")
 
     // clicking a circle
@@ -180,19 +186,24 @@ function initChart() {
 
             formatTooltipText(d3.select(d3.event.target).data()[0], tooltip_date, tooltip_sleep_metric, tooltip_hr_metric, tooltip_steps, tooltip_sleep_score)
 
+            x_val = parseInt(d3.select(d3.event.target).attr("cx"))
+            if (parseInt(d3.select(d3.event.target).attr("cx")) > 300) {
+                x_val -= 215;
+            }
+            y_val = parseInt(d3.select(d3.event.target).attr("cy"))
+            if (parseInt(d3.select(d3.event.target).attr("cy")) > 400) {
+                y_val -= 90;
+            }
+
             tooltip_text.selectAll("tspan")
-                .attr("x", 12 + parseInt(d3.select(d3.event.target).attr("cx")))
-                // .attr('y', parseInt(d3.select(d3.event.target).attr("cy")))
+                .attr("x", 12 + x_val)
                 .attr("dy", 16);
             tooltip_text
-                // .text(
-                //     formatTooltipText(d3.select(d3.event.target).data()[0], tooltip_text)
-                // )
-                .attr('x', 12 + parseInt(d3.select(d3.event.target).attr("cx")))
-                .attr('y', parseInt(d3.select(d3.event.target).attr("cy")));
+                .attr('x', 12 + x_val)
+                .attr('y', y_val);
             tooltip_rect
-                .attr('x', 8 + parseInt(d3.select(d3.event.target).attr("cx")))
-                .attr('y', -2 + parseInt(d3.select(d3.event.target).attr("cy")));
+                .attr('x', 8 + x_val)
+                .attr('y', -2 + y_val);
         } else {
             // if somewhere else is clicked (other than a data point), clear all circles
             d3.selectAll('circle').classed("selected", false);
@@ -234,14 +245,38 @@ function updateChart() {
     // if something is  selected, then update position of tooltip
     if (!d3.select(".selected").empty()) {
         var selected_circle = d3.select(".selected");
+        console.log(selected_circle.attr("cx"))
         tooltip.attr('x', selected_circle.attr("cx"))
             .attr('y', selected_circle.attr("cy"))
             // .text(
             //     formatTooltipText(selected_circle.data()[0], tooltip_text)
             // );
-        tooltip_date
-            .text(formatTooltipText(selected_circle.data()[0]["Date"]));
-        formatTooltipText(selected_circle.data()[0], tooltip_date, tooltip_sleep_metric);
+        // tooltip_date
+        //     .text(formatTooltipText(selected_circle.data()[0]["Date"]));
+        // formatTooltipText(selected_circle.data()[0], tooltip_date, tooltip_sleep_metric);
+
+        formatTooltipText(selected_circle.data()[0], tooltip_date, tooltip_sleep_metric, tooltip_hr_metric, tooltip_steps, tooltip_sleep_score)
+
+        // tooltip.style("visibility", "hidden");
+
+        x_val = parseInt(selected_circle.attr("cx"))
+        if (selected_circle.attr("cx") > 300) {
+            x_val -= 215;
+        }
+        y_val = parseInt(selected_circle.attr("cy"))
+        if (selected_circle.attr("cy") > 400) {
+            y_val -= 90;
+        }
+
+        tooltip_text.selectAll("tspan")
+            .attr("x", 12 + x_val)
+            .attr("dy", 16);
+        tooltip_text
+            .attr('x', 12 + x_val)
+            .attr('y', y_val);
+        tooltip_rect
+            .attr('x', 8 + x_val)
+            .attr('y', -2 + y_val);
     }
 }
 
