@@ -5,19 +5,13 @@ var extents;
 var scales;
 var titles;
 var tooltip;
-var sleepMetric = "Sleep1";
-var heartRateMetric = "HeartRate1";
-
-//create title for chart
-var title = d3.select('svg')
-    .append("text")
-    .attr("x", width/2)
-    .attr("y", 12)
-    .attr("font-size", "12px")
-    .text("Heart Rate vs. Sleep Metrics");
+var sleepMetric = "Total Sleep Duration";
+var heartRateMetric = "Average Resting Heart Rate";
+var startDate = "2022-01-01";
+var endDate = "2022-11-19";
 
 //load data
-d3.csv("mock_data.csv", function (csv) {
+d3.csv("data.csv", function (csv) {
     for (var i = 0; i < csv.length; ++i) {
         csv[i].HeartRate1 = Number(csv[i].HeartRate1);
         csv[i].HeartRate2 = Number(csv[i].HeartRate2);
@@ -28,59 +22,103 @@ d3.csv("mock_data.csv", function (csv) {
     initChart();
 });
 
+var sleepMetrics = ['Total Sleep Duration', 'Total Bedtime', 'Awake Time', 'REM Sleep Duration', 'Light Sleep Duration', 'Deep Sleep Duration', 'Bedtime Start', 'Bedtime End']
+var heartMetrics = ['Average Resting Heart Rate', 'Lowest Resting Heart Rate', 'Average HRV', 'Temperature Deviation (°C)', 'Temperature Trend Deviation', 'Respiratory Rate']
+
+d3.csv("data.csv", function (csv) {
+    for (var i = 0; i < csv.length; i++) {
+        for (var j = 0; j < sleepMetrics.length; j++) {
+            csv[i].sleepMetrics[j] = Number(csv[i].sleepMetrics[j]);
+        }
+        for (var j = 0; j < heartMetrics.length; j++) {
+            csv[i].heartMetrics[j] = Number(csv[i].heartMetrics[j]);
+        }
+        // csv[i]['Date'] = Date.parse(csv[i]['Date']);
+    }
+    data = csv;
+    initChart();
+})
+
 function initChart() {
     extents = {
-        "Sleep1": d3.extent(data, function (row) { return row.Sleep1; }),
-        "Sleep2": d3.extent(data, function (row) { return row.Sleep2; }),
-        "HeartRate1": d3.extent(data, function (row) { return row.HeartRate1; }),
-        "HeartRate2": d3.extent(data, function (row) { return row.HeartRate2; })
+        "Total Sleep Duration": d3.extent(data, function (row) { return row['Total Sleep Duration']; }),
+        "REM Sleep Duration": d3.extent(data, function (row) { return row['REM Sleep Duration']; }),
+        "Bedtime Start": d3.extent(data, function (row) { return row['Bedtime Start']; }),
+        "Bedtime End": d3.extent(data, function (row) { return row['Bedtime End']; }),
+
+        "Average Resting Heart Rate": d3.extent(data, function (row) { return row['Average Resting Heart Rate']; }),
+        "Average HRV": d3.extent(data, function (row) { return row['Average HRV']; }),
+        "Temperature Deviation (°C)": d3.extent(data, function (row) { return row['Temperature Deviation (°C)']; }),
     }
     scales = {
-        "Sleep1": d3.scaleLinear().domain(extents["Sleep1"]).range([50, 470]),
-        "Sleep2": d3.scaleLinear().domain(extents["Sleep2"]).range([50, 470]),
-        "HeartRate1": d3.scaleLinear().domain(extents["HeartRate1"]).range([470, 30]),
-        "HeartRate2": d3.scaleLinear().domain(extents["HeartRate2"]).range([470, 30])
+        "Total Sleep Duration": d3.scaleLinear().domain(extents["Total Sleep Duration"]).range([50, 470]),
+        "REM Sleep Duration": d3.scaleLinear().domain(extents["REM Sleep Duration"]).range([50, 470]),
+        "Bedtime Start": d3.scaleLinear().domain([-3, 6]).range([50, 470]),
+        "Bedtime End": d3.scaleLinear().domain([5, 14]).range([50, 470]),
+
+        "Average Resting Heart Rate": d3.scaleLinear().domain(extents["Average Resting Heart Rate"]).range([470, 30]),
+        "Average HRV": d3.scaleLinear().domain(extents["Average HRV"]).range([470, 30]),
+        "Temperature Deviation (°C)": d3.scaleLinear().domain([-1, 1.5]).range([470, 30])
     }
     titles = {
-        "Sleep1": "Sleep 1",
-        "Sleep2": "Sleep 2",
-        "HeartRate1": "Heart Rate 1",
-        "HeartRate2": "Heart Rate 2"
+        "Total Sleep Duration": "Total Sleep Duration",
+        "REM Sleep Duration": "REM Sleep Duration",
+        "Bedtime Start": "Bedtime Start",
+        "Bedtime End": "Bedtime End",
+
+        "Average Resting Heart Rate": "Average Resting Heart Rate",
+        "Average HRV": "Average HRV",
+        "Temperature Deviation (°C)": "Temperature Deviation (°C)"
     }
 
-    // create axes labels
-    var sleepLabel = d3.select('svg')
+    var chart = d3.select('svg');
+
+    //create title for chart
+    var title = chart
         .append("text")
         .attr("x", width/2)
-        .attr("y", height)
+        .attr("y", 12)
+        .attr("font-size", "12px")
+        .attr("text-anchor", "middle")
+        .text("Heart Rate vs. Sleep Metrics");
+
+    // create axes labels
+    var sleepLabel = chart
+        .append("text")
+        .attr("x", width/2)
+        .attr("y", height-3)
         .attr("id", "x-axis-label")
+        .attr("text-anchor", "middle")
         .attr("font-size", "12px");
-    var heartRateLabel = d3.select('svg')
+    var heartRateLabel = chart
         .append("text")
         .attr("x", -width/2)
         .attr("y", 20)
         .attr("font-size", "12px")
-        .attr("text-anchor", "end")
+        .attr("text-anchor", "middle")
         .attr("transform", "rotate(-90)")
         .attr("id", "y-axis-label");
     
     // creates groups for the axes
-    d3.select('svg')
+    chart
         .append("g") // create a group node
         .attr("id", "x-axis-g")
-        .attr("transform", "translate(0," + (width - 30) + ")");
+        .attr("transform", "translate(0," + (height - 30) + ")");
     
-    d3.select('svg') // or something else that selects the SVG element in your visualizations
+    chart // or something else that selects the SVG element in your visualizations
         .append("g") // create a group node
         .attr("id", "y-axis-g")
         .attr("transform", "translate(50, 0)");
 
     // create data points
-    var circles = d3.select('svg').selectAll("circle")
+    var circles = chart.selectAll("circle")
         .data(data)
         .enter()
         .append("circle")
         .attr('r', 5)
+        .attr('date', function(d) {
+            return d.Date;
+        })
         .classed("data-circle", true)
         .on("mouseover", function(d) { //change color on mouseover
             d3.select(this).classed("moused", true);
@@ -88,15 +126,17 @@ function initChart() {
         .on("mouseout", function(d) {
             d3.select(this).classed("moused", false);
         });
+        // .data(data, function(d) {
+        //     return d.Date});
 
     // create the tooltip
-    tooltip = d3.select('svg')
+    tooltip = chart
         .append("text")
         .attr("id", "tooltip")
         .style("visibility", "hidden"); //starts off hidden
 
     // clicking a circle
-    d3.select('svg').on("click", function() {
+    chart.on("click", function() {
         // if target is circle, copy above
         if (d3.event.target.classList.contains("data-circle")) {
             //unselect everything else
@@ -134,6 +174,8 @@ function updateChart() {
     d3.select('#x-axis-label').text(titles[sleepMetric]);
     d3.select('#y-axis-label').text(titles[heartRateMetric]);
 
+
+
     // update data points
     d3.selectAll(".data-circle")
         .attr('cx', function(d) {
@@ -141,6 +183,10 @@ function updateChart() {
         })
         .attr('cy', function(d) {
             return  scales[heartRateMetric](d[heartRateMetric]);
+        })
+        .classed("out-of-date", false)
+        .classed("out-of-date", function(d) {
+            return !(Date.parse(d.Date) >= Date.parse(startDate) && Date.parse(d.Date) <= Date.parse(endDate));
         });
 
     // if something is  selected, then update position of tooltip
@@ -167,5 +213,9 @@ function onMetricChanged() {
     sleepMetric = select.options[select.selectedIndex].value;
     var select = d3.select('#heartRateSelect').node();
     heartRateMetric = select.options[select.selectedIndex].value;
+    startDate = document.querySelector('#startDateSelect').value;
+    endDate = document.querySelector('#endDateSelect').value;
+    console.log(startDate);
+    console.log(endDate);
     updateChart();
 }

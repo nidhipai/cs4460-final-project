@@ -26,6 +26,7 @@ path.domain {
 .data-circle {
     opacity: .6;
     stroke: black;
+    fill: green;
 }
 
 /* Useful if you select a point and want to grayout the rest of the circles */
@@ -44,4 +45,10 @@ path.domain {
 
 .unselected {
     fill: blue;
+}
+
+.out-of-date {
+    opacity: 0.1;
+    stroke: black;
+    fill: black;
 }
