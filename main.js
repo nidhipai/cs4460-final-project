@@ -39,7 +39,6 @@ d3.csv("data.csv", function (csv) {
         for (var j = 0; j < heartMetrics.length; j++) {
             csv[i].heartMetrics[j] = Number(csv[i].heartMetrics[j]);
         }
-        // csv[i]['Date'] = Date.parse(csv[i]['Date']);
     }
     data = csv;
     initChart();
@@ -135,8 +134,6 @@ function initChart() {
         .on("mouseout", function(d) {
             d3.select(this).classed("moused", false);
         });
-        // .data(data, function(d) {
-        //     return d.Date});
 
     // create the tooltip
     tooltip = chart
@@ -151,7 +148,6 @@ function initChart() {
         .attr('stroke', 'black')
         .attr('fill', 'lightgray')
         .attr('opacity', '0.85')
-    // .style("visibility", "hidden") //starts off hidden
 
     tooltip_text = tooltip
         .append("text")
@@ -245,19 +241,11 @@ function updateChart() {
     // if something is  selected, then update position of tooltip
     if (!d3.select(".selected").empty()) {
         var selected_circle = d3.select(".selected");
-        console.log(selected_circle.attr("cx"))
-        tooltip.attr('x', selected_circle.attr("cx"))
+        tooltip
+            .attr('x', selected_circle.attr("cx"))
             .attr('y', selected_circle.attr("cy"))
-            // .text(
-            //     formatTooltipText(selected_circle.data()[0], tooltip_text)
-            // );
-        // tooltip_date
-        //     .text(formatTooltipText(selected_circle.data()[0]["Date"]));
-        // formatTooltipText(selected_circle.data()[0], tooltip_date, tooltip_sleep_metric);
 
         formatTooltipText(selected_circle.data()[0], tooltip_date, tooltip_sleep_metric, tooltip_hr_metric, tooltip_steps, tooltip_sleep_score)
-
-        // tooltip.style("visibility", "hidden");
 
         x_val = parseInt(selected_circle.attr("cx"))
         if (selected_circle.attr("cx") > 300) {
