@@ -131,9 +131,29 @@ function initChart() {
 
     // create the tooltip
     tooltip = chart
-        .append("text")
+        .append("g")
         .attr("id", "tooltip")
-        .style("visibility", "hidden"); //starts off hidden
+        .style("visibility", "hidden")
+
+    tooltip_rect = tooltip
+    .append('rect')
+    .attr('width', 160)
+    .attr('height', 100)
+    .attr('stroke', 'black')
+    .attr('fill', 'lightgray')
+    .attr('opacity', '0.75')
+    // .style("visibility", "hidden") //starts off hidden
+
+    var tooltip_text = tooltip
+        .append("text")
+    
+    var tooltip_date = tooltip_text
+        .append("tspan")
+        // .text("Test")
+
+    var tooltip_sleep_metric = tooltip_text
+        .append("tspan")
+        // .text("Another Test")
 
     // clicking a circle
     chart.on("click", function() {
@@ -147,10 +167,22 @@ function initChart() {
             tooltip.style("visibility", "visible")
                 .attr('x', d3.select(d3.event.target).attr("cx"))
                 .attr('y', d3.select(d3.event.target).attr("cy"))
-                .text(
-                    formatTooltipText(d3.select(d3.event.target).data()[0][sleepMetric],
-                    d3.select(d3.event.target).data()[0][heartRateMetric])
-                );
+
+            formatTooltipText(d3.select(d3.event.target).data()[0], tooltip_date, tooltip_sleep_metric)
+
+            tooltip_text.selectAll("tspan")
+                .attr("x", 12 + parseInt(d3.select(d3.event.target).attr("cx")))
+                // .attr('y', parseInt(d3.select(d3.event.target).attr("cy")))
+                .attr("dy", 16);
+            tooltip_text
+                // .text(
+                //     formatTooltipText(d3.select(d3.event.target).data()[0], tooltip_text)
+                // )
+                .attr('x', 12 + parseInt(d3.select(d3.event.target).attr("cx")))
+                .attr('y', parseInt(d3.select(d3.event.target).attr("cy")));
+            tooltip_rect
+                .attr('x', 8 + parseInt(d3.select(d3.event.target).attr("cx")))
+                .attr('y', -2 + parseInt(d3.select(d3.event.target).attr("cy")));
         } else {
             // if somewhere else is clicked (other than a data point), clear all circles
             d3.selectAll('circle').classed("selected", false);
@@ -194,16 +226,30 @@ function updateChart() {
         var selected_circle = d3.select(".selected");
         tooltip.attr('x', selected_circle.attr("cx"))
             .attr('y', selected_circle.attr("cy"))
-            .text(
-                formatTooltipText(selected_circle.data()[0][sleepMetric],
-                    selected_circle.data()[0][heartRateMetric])
-            );
+            // .text(
+            //     formatTooltipText(selected_circle.data()[0], tooltip_text)
+            // );
+        tooltip_date
+            .text(formatTooltipText(selected_circle.data()[0]["Date"]));
+        formatTooltipText(selected_circle.data()[0], tooltip_date, tooltip_sleep_metric);
     }
+
+    // function formatTooltipText(data) {
+    //     tooltip_date
+    //         .text(data["Date"])
+        
+    //     tooltip_sleep_metric
+    //         .text(sleepMetric + ": " + data[sleepMetric])
+    // }
 }
 
 // format text for tooltip
-function formatTooltipText(sleep, heartRate) {
-    return sleep + " " + heartRate;
+function formatTooltipText(data, tooltip_date, tooltip_sleep_metric) {
+    tooltip_date
+        .text(data["Date"])
+    
+    tooltip_sleep_metric
+        .text(sleepMetric + ": " + parseFloat(data[sleepMetric]).toFixed(2))
 }
 
 // event handler for changing the metrics with the drop down
