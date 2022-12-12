@@ -2,13 +2,13 @@
 <html>
 	<head>
 		<meta charset="UTF-8"/> 
-		<title>CS 4460: Sleep and Heart Rate</title>
+		<title>CS 4460: Sleep and Vitals</title>
 		<link href="style.css" type="text/css" rel="stylesheet" />
 		<script src="https://d3js.org/d3.v4.min.js"></script>
 		<script type="text/javascript" src="main.js"></script>	 
    	</head>
    	<body>
-        <h1>CS 4460 Final Project: Sleep and Heart Rate</h1>
+        <h1>CS 4460 Final Project: Sleep and Vitals</h1>
         <h2>Nidhi Pai and Tyler Schott</h2>
    		<br />
    		<br />
@@ -17,7 +17,7 @@
         </svg>
       </div>
         <div>
-            <label for="sleepSelect">Sleep metric: </label>
+            <label for="sleepSelect">Sleep Metric: </label>
             <select class="custom-select" id="sleepSelect" onchange="onMetricChanged()">
               <option selected value="Total Sleep Duration">Total Sleep Duration</option>
               <option value="REM Sleep Duration">REM Sleep Duration</option>
@@ -26,7 +26,7 @@
             </select> 
             <br>
             <br>
-            <label for="heartRateSelect">Heart rate metric: </label>
+            <label for="heartRateSelect">Vitals Metric: </label>
             <select class="custom-select" id="heartRateSelect" onchange="onMetricChanged()">
               <option selected value="Average Resting Heart Rate">Average Resting Heart Rate</option>
               <option value="Average HRV">Average HRV</option>

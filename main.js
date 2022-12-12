@@ -88,7 +88,7 @@ function initChart() {
         .attr("y", 12)
         .attr("font-size", "12px")
         .attr("text-anchor", "middle")
-        .text("Heart Rate vs. Sleep Metrics");
+        .text("Vitals vs. Sleep Metrics");
 
     // create axes labels
     var sleepLabel = chart
