@@ -2,6 +2,11 @@ body {
   font: 12px sans-serif;
 }
 
+label {
+    font-size: 15px;
+    margin-left: 15px;
+}
+
 .tick > line {
 	fill: none;
 	stroke: black;

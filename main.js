@@ -49,16 +49,18 @@ function initChart() {
         "Average Resting Heart Rate": d3.extent(data, function (row) { return row['Average Resting Heart Rate']; }),
         "Average HRV": d3.extent(data, function (row) { return row['Average HRV']; }),
         "Temperature Deviation (°C)": d3.extent(data, function (row) { return row['Temperature Deviation (°C)']; }),
+        "Respiratory Rate": d3.extent(data, function (row) { return row['Respiratory Rate']; }),
     }
     scales = {
-        "Total Sleep Duration": d3.scaleLinear().domain(extents["Total Sleep Duration"]).range([50, 470]),
-        "REM Sleep Duration": d3.scaleLinear().domain(extents["REM Sleep Duration"]).range([50, 470]),
+        "Total Sleep Duration": d3.scaleLinear().domain([3, 10]).range([50, 470]),
+        "REM Sleep Duration": d3.scaleLinear().domain([0.2, 2.4]).range([50, 470]),
         "Bedtime Start": d3.scaleLinear().domain([-3, 6]).range([50, 470]),
         "Bedtime End": d3.scaleLinear().domain([5, 14]).range([50, 470]),
 
-        "Average Resting Heart Rate": d3.scaleLinear().domain(extents["Average Resting Heart Rate"]).range([470, 30]),
-        "Average HRV": d3.scaleLinear().domain(extents["Average HRV"]).range([470, 30]),
-        "Temperature Deviation (°C)": d3.scaleLinear().domain([-1, 1.5]).range([470, 30])
+        "Average Resting Heart Rate": d3.scaleLinear().domain([48, 66]).range([470, 30]),
+        "Average HRV": d3.scaleLinear().domain([40, 76]).range([470, 30]),
+        "Temperature Deviation (°C)": d3.scaleLinear().domain([-0.7, 1.5]).range([470, 30]),
+        "Respiratory Rate": d3.scaleLinear().domain([11, 14]).range([470, 30]),
     }
     titles = {
         "Total Sleep Duration": "Total Sleep Duration",
@@ -68,7 +70,8 @@ function initChart() {
 
         "Average Resting Heart Rate": "Average Resting Heart Rate",
         "Average HRV": "Average HRV",
-        "Temperature Deviation (°C)": "Temperature Deviation (°C)"
+        "Temperature Deviation (°C)": "Temperature Deviation (°C)",
+        "Respiratory Rate": "Respiratory Rate",
     }
 
     var chart = d3.select('svg');
@@ -136,12 +139,12 @@ function initChart() {
         .style("visibility", "hidden")
 
     tooltip_rect = tooltip
-    .append('rect')
-    .attr('width', 160)
-    .attr('height', 100)
-    .attr('stroke', 'black')
-    .attr('fill', 'lightgray')
-    .attr('opacity', '0.75')
+        .append('rect')
+        .attr('width', 200)
+        .attr('height', 90)
+        .attr('stroke', 'black')
+        .attr('fill', 'lightgray')
+        .attr('opacity', '0.85')
     // .style("visibility", "hidden") //starts off hidden
 
     var tooltip_text = tooltip
@@ -149,11 +152,18 @@ function initChart() {
     
     var tooltip_date = tooltip_text
         .append("tspan")
-        // .text("Test")
 
     var tooltip_sleep_metric = tooltip_text
         .append("tspan")
-        // .text("Another Test")
+
+    var tooltip_hr_metric = tooltip_text
+        .append("tspan")
+
+    var tooltip_steps = tooltip_text
+        .append("tspan")
+
+    var tooltip_sleep_score = tooltip_text
+        .append("tspan")
 
     // clicking a circle
     chart.on("click", function() {
@@ -168,7 +178,7 @@ function initChart() {
                 .attr('x', d3.select(d3.event.target).attr("cx"))
                 .attr('y', d3.select(d3.event.target).attr("cy"))
 
-            formatTooltipText(d3.select(d3.event.target).data()[0], tooltip_date, tooltip_sleep_metric)
+            formatTooltipText(d3.select(d3.event.target).data()[0], tooltip_date, tooltip_sleep_metric, tooltip_hr_metric, tooltip_steps, tooltip_sleep_score)
 
             tooltip_text.selectAll("tspan")
                 .attr("x", 12 + parseInt(d3.select(d3.event.target).attr("cx")))
@@ -233,23 +243,24 @@ function updateChart() {
             .text(formatTooltipText(selected_circle.data()[0]["Date"]));
         formatTooltipText(selected_circle.data()[0], tooltip_date, tooltip_sleep_metric);
     }
-
-    // function formatTooltipText(data) {
-    //     tooltip_date
-    //         .text(data["Date"])
-        
-    //     tooltip_sleep_metric
-    //         .text(sleepMetric + ": " + data[sleepMetric])
-    // }
 }
 
 // format text for tooltip
-function formatTooltipText(data, tooltip_date, tooltip_sleep_metric) {
+function formatTooltipText(data, tooltip_date, tooltip_sleep_metric, tooltip_hr_metric, tooltip_steps, tooltip_sleep_score) {
     tooltip_date
         .text(data["Date"])
     
     tooltip_sleep_metric
         .text(sleepMetric + ": " + parseFloat(data[sleepMetric]).toFixed(2))
+
+    tooltip_hr_metric
+        .text(heartRateMetric + ": " + parseFloat(data[heartRateMetric]).toFixed(2))
+
+    tooltip_steps
+        .text("Steps: " + data["Steps"])
+
+    tooltip_sleep_score
+        .text("Proprietary Sleep Score: " + data["Sleep Score"])
 }
 
 // event handler for changing the metrics with the drop down

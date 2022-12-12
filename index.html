@@ -12,8 +12,10 @@
         <h2>Nidhi Pai and Tyler Schott</h2>
    		<br />
    		<br />
+      <div>
         <svg id="chart" width="500" height="500" style="border: 1px solid #777;">
         </svg>
+      </div>
         <div>
             <label for="sleepSelect">Sleep metric: </label>
             <select class="custom-select" id="sleepSelect" onchange="onMetricChanged()">
@@ -23,12 +25,15 @@
               <option value="Bedtime End">Bedtime End</option>
             </select> 
             <br>
+            <br>
             <label for="heartRateSelect">Heart rate metric: </label>
             <select class="custom-select" id="heartRateSelect" onchange="onMetricChanged()">
               <option selected value="Average Resting Heart Rate">Average Resting Heart Rate</option>
               <option value="Average HRV">Average HRV</option>
               <option value="Temperature Deviation (°C)">Temperature Deviation (°C)</option>
+              <option value="Respiratory Rate">Respiratory Rate</option>
             </select>
+            <br>
             <br>
             <label for="startDateSelect">Start Date: </label>
             <input type="date" id="startDateSelect" min="2022-01-01" value="2022-01-01" max="2022-11-19" onchange="onMetricChanged()">
